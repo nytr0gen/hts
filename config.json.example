@@ -1,0 +1,6 @@
+{
+    "debug": true,
+    "mongo_url": "mongodb://localhost:27017/",
+    "mongo_db": "test-db",
+    "subreddits": ["programming", "python"] 
+}
