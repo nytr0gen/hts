@@ -21,21 +21,7 @@ class RedditFetch:
 
     # hardcoded limit
     def _fetch_subreddit(self, subreddit, limit=1024):
-        # get last id from db
-        c_items = db.items.find({'subreddit': subreddit}).sort('-id')
-
-        params = None
-        if c_items.count() > 0:
-            last_item = c_items[0]
-            params = {
-                # t3 is for link
-                # https://www.reddit.com/dev/api/ -- type prefixes
-                'before': 't3_' + last_item['id']
-            }
-
-        # before last t3_id from db
-        submissions_list = self._reddit.subreddit(subreddit).new(params=params,
-                                                                 limit=limit)
+        submissions_list = self._reddit.subreddit(subreddit).new(limit=limit)
 
         submissions_count = 0
         for submission in submissions_list:
@@ -46,15 +32,6 @@ class RedditFetch:
             # ajung pe la 400,854,437 ('6mnp9h'), ceea ce e mai mic ca un int32
             # https://stackoverflow.com/questions/1181919/python-base-36-encoding
             # a doua solutie e mai viabila deoarece e usor sa evit si duplicatele cu ea
-
-            # 'downs': 0,
-            # 'hide_score': True,
-            # 'likes': None,
-            # 'num_comments': 0,
-            # 'score': 1,
-            # 'thumbnail': u'',
-            # 'ups': 1,
-            # 'url': u'http://www.castlebayhouse.com/cplusplus.html',
 
             # author may have deleted his account or just deleted his
             # connection to this post
@@ -81,32 +58,23 @@ class RedditFetch:
             except pymongo.errors.DuplicateKeyError as e:
                 # todo: pastreaza num_comments si trage comments doar daca
                 # numarul primit e mai mare decat cel din baza de date
-                pass
-            
+
+                # in principiu daca repet un id inseamna ca toate informatiile
+                # de dupa acesta le am deja in baza de date. submission_list e
+                # un iterator deci va fi ok sa dau break.
+                # am incercat cu parametrul 'before' de la reddit, dar nu functioneaza predictibil.
+                break
+
             submissions_count += 1
 
         print('Got %d new submissions from %s' % (submissions_count, subreddit))
 
     def _fetch_comments(self, submission_id, subreddit):
-        # get last comment from db
-        # get all comments before last_comment_id
-        # insert comments in db
-
-        # 'body_html': u'<div class="md"><p>SQLAlchemy</p>\n</div>',
-        # 'can_gild': True,
-        # 'depth':0,
-        # 'edited': False,
-        # 'link_id': u't3_6mnp9h',
-        # 'name': u't1_dk2xa1h',
-        # 'parent_id': u't3_6mnp9h',
-        # 'score': 3,
-        # 'stickied': False,
-
         submission = self._reddit.submission(id=submission_id)
         submission.comments.replace_more(limit=0)
         # only get top level comments
         for comment in submission.comments:
-            author_name = submission.author.name if submission.author is not None else None            
+            author_name = submission.author.name if submission.author is not None else None
             db_comm = {
                 '_id': int(comment.id, 36) << 1 | 1, # avoid duplicates
                 'id': comment.id, # keep base36 id for convenience
@@ -116,7 +84,7 @@ class RedditFetch:
                 'created_utc': int(comment.created_utc),
                 'depth': comment.depth,
                 'subreddit': subreddit,
-                'type': self.TYPE_COMMENT, 
+                'type': self.TYPE_COMMENT,
             }
 
             try:

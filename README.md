@@ -13,7 +13,7 @@
 
 3. Run `pip install -r requirements.txt` to install all requirements.
 
-4. Star the application `python app.py`
+4. Start the application `python app.py`
 
 ## Useful Commands
 * `python updatedb.py`

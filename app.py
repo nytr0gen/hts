@@ -37,7 +37,7 @@ def items():
         query['$text'] = { '$search': keyword }
 
     # reverse order
-    c_items = db.items.find(query).sort('-created')
+    c_items = db.items.find(query).sort('created', -1)
 
     # subreddit not found
     if c_items.count() == 0:
