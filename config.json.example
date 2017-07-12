@@ -1,6 +1,13 @@
 {
     "debug": true,
-    "mongo_url": "mongodb://localhost:27017/",
-    "mongo_db": "test-db",
-    "subreddits": ["programming", "python"] 
+    "mongo": {
+        "url": "mongodb://localhost:27017/",
+        "db": "test-db"
+    },
+    "reddit": {
+        "client_id": "",
+        "client_secret": "",
+        "user_agent": "warlock:level110:v3"
+        "subreddits": ["programming", "python"]
+    }
 }
