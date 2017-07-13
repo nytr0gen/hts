@@ -4,22 +4,22 @@ services:
   mongo:
     image: mongo
     ports:
-    - 27017:27017
+      - 27017:27017
   web:
     build: app
     volumes:
-    - ./app:/code
+      - ./app:/code
     ports:
-    - "5000:5000"
-    depends_on:
-    - mongo
+      - 5000:5000
     links:
-    - mongo
+      - mongo
+    depends_on:
+      - mongo
   cron:
     build: cron
     volumes:
-    - ./cron:/code
-    depends_on:
-    - mongo
+      - ./cron:/code
     links:
-    - mongo
+      - mongo
+    depends_on:
+      - mongo
