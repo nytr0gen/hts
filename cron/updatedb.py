@@ -107,6 +107,7 @@ def main():
         client_secret=config['reddit']['client_secret'],
         user_agent=config['reddit']['user_agent'])
 
+    print("Starting Update Db Cron")
     while True:
         rf.run(config['reddit']['subreddits'])
         sleep(10 * 60) # 10min

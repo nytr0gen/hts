@@ -11,10 +11,4 @@
 
 2. Copy `config.json.example` to `config.json` and update the variables.
 
-3. Run `make deps` to install all requirements.
-
-4. Start the application `python app.py`
-
-## Useful Commands
-* `make run`
-* `make updatedb`
+3. Run `docker-compose up`.
