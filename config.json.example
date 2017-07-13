@@ -1,5 +1,9 @@
 {
-    "debug": true,
+    "app": {
+        "host": "localhost",
+        "port": 5000,
+        "debug": true
+    },
     "mongo": {
         "url": "mongodb://localhost:27017/",
         "db": "test-db"

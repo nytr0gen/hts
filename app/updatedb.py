@@ -17,10 +17,11 @@ class RedditFetch:
 
     def run(self, subreddits):
         for subreddit in subreddits:
-            self._fetch_subreddit(subreddit)
+            submissions_count = self.fetch_subreddit(subreddit)
+            print('Got %d new submissions from %s' % (submissions_count, subreddit))
 
     # hardcoded limit
-    def _fetch_subreddit(self, subreddit, limit=1024):
+    def fetch_subreddit(self, subreddit, limit=1024):
         submissions_list = self._reddit.subreddit(subreddit).new(limit=limit)
 
         submissions_count = 0
@@ -54,7 +55,7 @@ class RedditFetch:
             try:
                 db.items.insert_one(db_sub)
                 if submission.num_comments > 0:
-                    self._fetch_comments(submission.id, subreddit)
+                    self.fetch_comments(submission.id, subreddit)
             except pymongo.errors.DuplicateKeyError as e:
                 # todo: pastreaza num_comments si trage comments doar daca
                 # numarul primit e mai mare decat cel din baza de date
@@ -67,12 +68,13 @@ class RedditFetch:
 
             submissions_count += 1
 
-        print('Got %d new submissions from %s' % (submissions_count, subreddit))
+        return submissions_count
 
-    def _fetch_comments(self, submission_id, subreddit):
+    def fetch_comments(self, submission_id, subreddit):
         submission = self._reddit.submission(id=submission_id)
         submission.comments.replace_more(limit=0)
         # only get top level comments
+        comments_count = 0
         for comment in submission.comments:
             author_name = submission.author.name if submission.author is not None else None
             db_comm = {
@@ -93,6 +95,10 @@ class RedditFetch:
                 # exista posibilitatea ca acest comment sa fie editat. in acest
                 # caz ar trebui un update
                 pass
+            
+            comments_count += 1
+
+        return comments_count
 
 
 def main():

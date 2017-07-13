@@ -11,9 +11,10 @@
 
 2. Copy `config.json.example` to `config.json` and update the variables.
 
-3. Run `pip install -r requirements.txt` to install all requirements.
+3. Run `make deps` to install all requirements.
 
 4. Start the application `python app.py`
 
 ## Useful Commands
-* `python updatedb.py`
+* `make run`
+* `make updatedb`

@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
+from bson.json_util import dumps
 from config import db, config
-app = Flask(__name__)
+app = Flask('hts')
 
 # main flask api route
 # /items/?subreddit=<subreddit>&from=<t1>&to=<t2>
@@ -34,6 +35,10 @@ def items():
     # add keyword to query filter
     keyword = request.args.get('keyword') # optional
     if keyword is not None:
+        # works only for complete words
+        # if a sentence contains "word" and you look for "ord", it will result 
+        # only in items containing "ord".
+        # $regex can be used for partial words 
         query['$text'] = { '$search': keyword }
 
     # reverse order
@@ -50,8 +55,16 @@ def items():
     '''
 
     # TODO de facut paginare
-    return jsonify(list(c_items))
+    data = list(c_items)
+
+    return app.response_class(
+        response=dumps(data),
+        status=200,
+        mimetype='application/json'
+    )
 
 
 if __name__ == '__main__':
-    app.run(debug=config['debug'])
+    app.run(debug=config['app']['debug'],
+            host=config['app']['host'],
+            port=config['app']['port'])
