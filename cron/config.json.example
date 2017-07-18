@@ -2,7 +2,7 @@
     "reddit": {
         "client_id": "",
         "client_secret": "",
-        "user_agent": "warlock:level110:v3"
+        "user_agent": "warlock:level110:v3",
         "subreddits": ["programming", "python"]
     },
     "mongo": {

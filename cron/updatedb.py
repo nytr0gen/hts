@@ -70,8 +70,11 @@ class RedditFetch:
 
         return submissions_count
 
-    def fetch_comments(self, submission_id, subreddit):
+    def fetch_comments(self, submission_id, subreddit, limit=None):
         submission = self._reddit.submission(id=submission_id)
+        submission.comment_sort = 'new'
+        if limit is not None:
+            submission.comment_limit = limit
         submission.comments.replace_more(limit=0)
         # only get top level comments
         comments_count = 0
@@ -95,7 +98,7 @@ class RedditFetch:
                 # exista posibilitatea ca acest comment sa fie editat. in acest
                 # caz ar trebui un update
                 pass
-            
+
             comments_count += 1
 
         return comments_count
